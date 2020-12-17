@@ -25,4 +25,28 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+router.patch('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updatedLog = await LogEntry.findOneAndUpdate(
+      { _id: id },
+      { $set: req.body },
+      { new: true },
+    );
+    res.json(updatedLog);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete('/:id', async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const deletedLog = await LogEntry.deleteOne({ _id: id });
+    res.json(deletedLog);
+  } catch (err) {
+    next(err);
+  }
+});
+
 module.exports = router;
