@@ -6,3 +6,14 @@ body {
   
   overflow: hidden;
 }
+
+.marker-blue path{
+  fill: #34ebd8;
+}
+
+.marker-red path {
+  fill: red;
+}
+.popup {
+  max-width: 300px;
+}
