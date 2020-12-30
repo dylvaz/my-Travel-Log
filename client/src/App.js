@@ -1,7 +1,9 @@
 import * as React from 'react';
 import { useState, useEffect } from 'react';
 import ReactMapGL, { Marker, Popup } from 'react-map-gl';
+
 import { listLogEntries } from './API';
+import LogEntryForm from './LogEntryForm';
 
 const App = () => {
   const [logEntries, setLogEntries] = useState([]);
@@ -15,15 +17,17 @@ const App = () => {
     zoom: 3
   });
 
+  const getEntries = async () => {
+    try {
+      const logEntries = await listLogEntries();
+      setLogEntries(logEntries);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        const logEntries = await listLogEntries();
-        setLogEntries(logEntries);
-      } catch (err) {
-        console.error(err);
-      }
-    })();
+    getEntries();
   }, []);
 
   const showAddMarkerPopup = (e) => {
@@ -52,6 +56,9 @@ const App = () => {
           >
             <svg
               className="marker-blue"
+              onClick={() => setShowPopup({
+                [entry._id]: true,
+              })}
               style={{
                 height: '24px',
                 width: '24px',
@@ -73,6 +80,7 @@ const App = () => {
                 longitude={entry.longitude}
                 closeButton={true}
                 closeOnClick={false}
+                dynamicPosition={true}
                 onClose={() => setShowPopup({})}
                 anchor="top"
               >
@@ -80,6 +88,7 @@ const App = () => {
                   <h4>{entry.title}</h4>
                   <p>{entry.comments}</p>
                   <small>Visited on: {new Date(entry.visitDate).toLocaleDateString()}</small>
+                  {entry.image && <img src={entry.image} alt={entry.title} />}
                 </div>
               </Popup>
             ) : null
@@ -120,7 +129,12 @@ const App = () => {
               anchor="top"
             >
               <div className="popup">
-                <h3>Add your new log entry here!</h3>
+                <LogEntryForm
+                  onClose={() => {
+                    setAddEntryLocation(null);
+                    getEntries();
+                  }}
+                  location={addEntryLocation} />
               </div>
             </Popup>
           </>
