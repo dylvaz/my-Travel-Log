@@ -8,3 +8,18 @@ export async function listLogEntries() {
     console.error(err);
   }
 };
+
+export async function createLogEntry(entry) {
+  try {
+    const response = await fetch(`${API_URL}/api/logs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(entry),
+    });
+    return response.json();
+  } catch (err) {
+    console.error(err);
+  }
+}
